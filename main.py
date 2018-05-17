@@ -1,9 +1,22 @@
 import numpy as np
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+
 import Body
 
 
-def update():
-    pass
+def draw(bodies):
+    # Create figure
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+
+    # Draw bodies
+    for body in bodies:
+        x, y, z = body.position
+        ax.scatter(x, y, z)
+
+    # Show the figure
+    plt.show()
 
 
 if __name__ == '__main__':
@@ -12,11 +25,11 @@ if __name__ == '__main__':
     dt = 0.1
 
     # Body parameters
-    num_bodies = 5
-    mass = 10*np.random.rand(num_bodies)
+    num_bodies = 30
+    mass = 100*np.random.rand(num_bodies) + 10
     position = 5*np.random.rand(3, num_bodies)
-    velocity = 5*np.random.rand(3, num_bodies)
-    acceleration = 5*np.random.rand(3, num_bodies)
+    velocity = np.zeros((3, num_bodies))
+    acceleration = np.zeros((3, num_bodies))
 
     # Create and initialize bodies
     body = []
@@ -27,7 +40,7 @@ if __name__ == '__main__':
     t = 0
     while t < t_max:
         # Draw current state
-        # TODO: Draw current state
+        draw(body)
 
         for i in range(num_bodies):
             # Calculate interactions with other bodies
@@ -35,7 +48,8 @@ if __name__ == '__main__':
                 if i != j:
                     force = body[i].interact(body[j])
                     body[i].add_force(force)
-            # Move body
-            body[i].position += velocity * dt + acceleration * dt * dt
+            # Update body position and velocity
+            body[i].velocity += body[i].acceleration * dt * dt
+            body[i].position += body[i].velocity * dt
         # Update time
         t += dt
